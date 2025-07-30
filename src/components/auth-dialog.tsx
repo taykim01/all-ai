@@ -39,7 +39,7 @@ export function AuthDialog({
     try {
       const result =
         mode === "signin"
-          ? await signIn(email, password)
+          ? await signIn(email, password) // TODO: middleware absent
           : await signUp(email, password);
 
       if (result.success) {
@@ -69,7 +69,7 @@ export function AuthDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
           <DialogTitle>{mode === "signin" ? "로그인" : "회원가입"}</DialogTitle>
           <DialogDescription>
@@ -84,6 +84,7 @@ export function AuthDialog({
             <Input
               type="email"
               placeholder="이메일"
+              className="placeholder:text-black/50"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -95,6 +96,7 @@ export function AuthDialog({
             <Input
               type="password"
               placeholder="비밀번호"
+              className="placeholder:text-black/50"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

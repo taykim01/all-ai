@@ -1,43 +1,98 @@
-"use client";
-
-import { useState, useEffect, useCallback } from "react";
-import { getChatMessages } from "@/app/actions/message";
+import { useCallback } from "react";
+import { getChatMessages, sendMessage } from "@/app/actions/message";
+import { useMessageStore } from "@/stores";
 import type { Tables } from "@/types/database.types";
 
 type Message = Tables<"messages">;
 
-export function useMessages(chatId?: string) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useMessages() {
+  const {
+    messagesByChatId,
+    loading,
+    error,
+    setMessages,
+    addMessage,
+    setLoading,
+    setError,
+    clearMessages,
+  } = useMessageStore();
 
-  const fetchMessages = useCallback(async () => {
-    if (!chatId) {
-      setMessages([]);
-      setLoading(false);
-      return;
-    }
+  const getMessages = useCallback(
+    (chatId: string): Message[] => {
+      return messagesByChatId[chatId] || [];
+    },
+    [messagesByChatId]
+  );
 
-    try {
-      setLoading(true);
-      const result = await getChatMessages(chatId);
-
-      if (result.success && result.data) {
-        setMessages(result.data);
-        setError(null);
-      } else {
-        setError(result.error || "Failed to fetch messages");
+  const fetchMessages = useCallback(
+    async (chatId: string) => {
+      if (!chatId) {
+        return;
       }
-    } catch {
-      setError("Failed to fetch messages");
-    } finally {
-      setLoading(false);
-    }
-  }, [chatId]);
 
-  useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
+      try {
+        setLoading(true);
+        setError(null);
 
-  return { messages, loading, error, refetch: fetchMessages };
+        const result = await getChatMessages(chatId);
+
+        if (result.success && result.data) {
+          setMessages(chatId, result.data);
+        } else {
+          setError(result.error || "Failed to fetch messages");
+          setMessages(chatId, []);
+        }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+        setError("Failed to fetch messages");
+        setMessages(chatId, []);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setMessages, setLoading, setError]
+  );
+
+  const sendNewMessage = useCallback(
+    async (
+      chatId: string,
+      content: string,
+      role: "user" | "assistant" = "user"
+    ) => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const result = await sendMessage(
+          chatId,
+          content as "user" | "assistant",
+          role
+        );
+
+        if (result.success && result.data) {
+          addMessage(chatId, result.data);
+          return result.data;
+        } else {
+          setError(result.error || "Failed to send message");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+        setError("Failed to send message");
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [addMessage, setLoading, setError]
+  );
+
+  return {
+    getMessages,
+    loading,
+    error,
+    fetchMessages,
+    sendNewMessage,
+    clearMessages,
+  };
 }

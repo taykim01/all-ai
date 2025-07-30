@@ -1,10 +1,11 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 
 export async function createChat(userId: string, title: string) {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("chats")
       .insert({
@@ -26,6 +27,7 @@ export async function createChat(userId: string, title: string) {
 
 export async function updateChatTitle(chatId: string, title: string) {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("chats")
       .update({ title, updated_at: new Date().toISOString() })
@@ -45,6 +47,7 @@ export async function updateChatTitle(chatId: string, title: string) {
 
 export async function deleteChat(chatId: string) {
   try {
+    const supabase = await createClient();
     const { error } = await supabase.from("chats").delete().eq("id", chatId);
 
     if (error) throw error;
@@ -59,6 +62,7 @@ export async function deleteChat(chatId: string) {
 
 export async function getUserChats(userId: string) {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("chats")
       .select("*")

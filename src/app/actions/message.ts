@@ -1,8 +1,11 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 import { generateAIResponse, selectBestModel, type AIMessage } from "@/lib/ai";
 import { revalidatePath } from "next/cache";
+import type { Tables } from "@/types/database.types";
+
+type Message = Tables<"messages">;
 
 export async function createMessage(
   chatId: string,
@@ -11,6 +14,7 @@ export async function createMessage(
   modelUsed?: string
 ) {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("messages")
       .insert({
@@ -32,8 +36,12 @@ export async function createMessage(
   }
 }
 
+// Alias for backward compatibility and clearer naming
+export const sendMessage = createMessage;
+
 export async function getChatMessages(chatId: string) {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("messages")
       .select("*")
@@ -51,6 +59,8 @@ export async function getChatMessages(chatId: string) {
 
 export async function generateResponse(chatId: string, userMessage: string) {
   try {
+    const supabase = await createClient();
+
     // First, save the user message
     const userMsgResult = await createMessage(chatId, "user", userMessage);
     if (!userMsgResult.success) {
@@ -64,7 +74,7 @@ export async function generateResponse(chatId: string, userMessage: string) {
     }
 
     // Convert to AI message format
-    const messages: AIMessage[] = historyResult.data.map((msg) => ({
+    const messages: AIMessage[] = historyResult.data.map((msg: Message) => ({
       role: msg.role as "user" | "assistant",
       content: msg.content,
     }));

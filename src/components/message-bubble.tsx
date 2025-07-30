@@ -1,9 +1,11 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ModelBadge } from "@/components/model-badge";
 import { formatDate, cn } from "@/lib/utils";
 import { Bot, User } from "lucide-react";
 import type { Tables } from "@/types/database.types";
+import type { AIModel } from "@/lib/ai";
 
 type Message = Tables<"messages">;
 
@@ -29,14 +31,12 @@ export function MessageBubble({ message, className }: MessageBubbleProps) {
       </Avatar>
 
       <div className="flex-1 space-y-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-medium">
             {isUser ? "사용자" : "AI Assistant"}
           </span>
           {message.model_used && !isUser && (
-            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-              {message.model_used}
-            </span>
+            <ModelBadge model={message.model_used as AIModel} />
           )}
           <span className="text-xs text-muted-foreground">
             {formatDate(message.created_at)}

@@ -1,5 +1,3 @@
-"use client";
-
 import { MessageSquare, Sparkles } from "lucide-react";
 
 export default function ChatPage() {

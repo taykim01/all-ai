@@ -1,9 +1,10 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export async function signUp(email: string, password: string) {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -23,6 +24,7 @@ export async function signUp(email: string, password: string) {
 
 export async function signIn(email: string, password: string) {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -42,6 +44,7 @@ export async function signIn(email: string, password: string) {
 
 export async function signOut() {
   try {
+    const supabase = await createClient();
     const { error } = await supabase.auth.signOut();
 
     if (error) throw error;
@@ -58,6 +61,7 @@ export async function signOut() {
 
 export async function getUser() {
   try {
+    const supabase = await createClient();
     const {
       data: { user },
       error,

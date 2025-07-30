@@ -1,10 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useMessages } from "@/hooks/use-messages";
 import { MessageBubble } from "@/components/message-bubble";
 import { ChatInput } from "@/components/chat-input";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 
 interface ChatWindowProps {
@@ -12,7 +12,8 @@ interface ChatWindowProps {
 }
 
 export function ChatWindow({ chatId }: ChatWindowProps) {
-  const { messages, loading, refetch } = useMessages(chatId);
+  const { getMessages, loading, fetchMessages } = useMessages();
+  const messages = getMessages(chatId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -20,8 +21,18 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
   };
 
   useEffect(() => {
+    if (chatId) {
+      fetchMessages(chatId);
+    }
+  }, [chatId, fetchMessages]);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleMessageSent = () => {
+    fetchMessages(chatId);
+  };
 
   if (loading) {
     return (
@@ -61,7 +72,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
         )}
       </div>
 
-      <ChatInput chatId={chatId} onMessageSent={refetch} />
+      <ChatInput chatId={chatId} onMessageSent={handleMessageSent} />
     </div>
   );
 }
