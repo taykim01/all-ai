@@ -71,7 +71,7 @@ export async function getUser() {
 
     return { success: true, data: user };
   } catch (error) {
-    console.error("Error getting user:", error);
+    console.log("Error getting user:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to get user",
