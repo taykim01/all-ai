@@ -1,10 +1,14 @@
+"use client";
+
 import { useCallback } from "react";
-import { getUserChats, createChat, deleteChat } from "@/app/actions/chat";
-import { useChatStore } from "@/stores";
-import type { Tables } from "@/types/database.types";
+import { getChats, createChat, deleteChat } from "@/features/chat/actions";
+import { useChatStore } from "@/core/stores";
+import { Chat } from "@/core/types";
 
-type Chat = Tables<"chats">;
-
+/**
+ * Custom hook for managing chats
+ * @returns Chat state and methods
+ */
 export function useChats() {
   const {
     chats,
@@ -28,19 +32,15 @@ export function useChats() {
       try {
         setLoading(true);
         setError(null);
+        const result = await getChats(userId);
 
-        const result = await getUserChats(userId);
-
-        if (result.success && result.data) {
-          setChats(result.data);
+        if (result.success) {
+          setChats(result.data as Chat[]);
         } else {
-          setError(result.error || "Failed to fetch chats");
-          setChats([]);
+          setError(result.error as string);
         }
-      } catch (error) {
-        console.error("Error fetching chats:", error);
-        setError("Failed to fetch chats");
-        setChats([]);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch chats");
       } finally {
         setLoading(false);
       }
@@ -49,23 +49,23 @@ export function useChats() {
   );
 
   const createNewChat = useCallback(
-    async (userId: string, title: string) => {
+    async (userId: string, title: string = "New Chat") => {
       try {
         setLoading(true);
         setError(null);
-
         const result = await createChat(userId, title);
 
-        if (result.success && result.data) {
-          addChat(result.data);
+        if (result.success) {
+          addChat(result.data as Chat);
           return result.data;
         } else {
-          setError(result.error || "Failed to create chat");
+          setError(result.error as string);
           return null;
         }
-      } catch (error) {
-        console.error("Error creating chat:", error);
-        setError("Failed to create chat");
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to create chat";
+        setError(errorMessage);
         return null;
       } finally {
         setLoading(false);
@@ -79,19 +79,17 @@ export function useChats() {
       try {
         setLoading(true);
         setError(null);
-
         const result = await deleteChat(chatId);
 
         if (result.success) {
           removeChat(chatId);
           return true;
         } else {
-          setError(result.error || "Failed to delete chat");
+          setError(result.error as string);
           return false;
         }
-      } catch (error) {
-        console.error("Error deleting chat:", error);
-        setError("Failed to delete chat");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to delete chat");
         return false;
       } finally {
         setLoading(false);
@@ -105,8 +103,7 @@ export function useChats() {
     loading,
     error,
     fetchChats,
-    createChat: createNewChat, // Rename to match what sidebar.tsx expects
-    deleteChat: deleteChatById, // Rename to match what sidebar.tsx expects
-    clearChats,
+    createChat: createNewChat,
+    deleteChat: deleteChatById,
   };
 }

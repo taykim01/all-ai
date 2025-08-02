@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { getModelInfo } from "@/lib/ai";
-import type { AIModel } from "@/lib/ai";
+import { getModelInfo } from "@/infrastructure/ai";
+import type { AIModel } from "@/core/types/ai.types";
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 

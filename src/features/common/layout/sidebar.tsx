@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuthStore } from "@/stores";
-import { useChats } from "@/hooks/use-chats";
+import { useAuthStore } from "@/core/stores";
+import { useChats } from "@/features/chat/hooks/use-chats";
 import { Button } from "@/components/ui/button";
-import { signOut } from "@/app/actions/auth";
+import { signOut } from "@/features/auth/actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Plus, MessageSquare, Trash2, LogOut } from "lucide-react";
 import { cn, truncateText } from "@/lib/utils";

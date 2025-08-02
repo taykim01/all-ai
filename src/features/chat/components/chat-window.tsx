@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useMessages } from "@/hooks/use-messages";
-import { MessageBubble } from "@/components/message-bubble";
-import { ChatInput } from "@/components/chat-input";
+import { useMessages } from "@/features/chat/hooks/use-messages";
+import { MessageBubble } from "@/features/chat/components/message-bubble";
+import { ChatInput } from "@/features/chat/components/chat-input";
 import { Separator } from "@/components/ui/separator";
 import { Loader2 } from "lucide-react";
 

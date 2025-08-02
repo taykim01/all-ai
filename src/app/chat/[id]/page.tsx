@@ -1,4 +1,4 @@
-import { ChatWindow } from "@/components/chat-window";
+import { ChatWindow } from "@/features/chat/components";
 import { notFound } from "next/navigation";
 
 interface ChatPageProps {

@@ -1,11 +1,11 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ModelBadge } from "@/components/model-badge";
+import { ModelBadge } from "@/features/chat/components/model-badge";
 import { formatDate, cn } from "@/lib/utils";
 import { Bot, User } from "lucide-react";
-import type { Tables } from "@/types/database.types";
-import type { AIModel } from "@/lib/ai";
+import type { Tables } from "@/core/types/database.types";
+import type { AIModel } from "@/core/types/ai.types";
 
 type Message = Tables<"messages">;
 

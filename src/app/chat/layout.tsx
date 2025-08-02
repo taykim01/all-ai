@@ -1,5 +1,5 @@
-import { getUser } from "@/app/actions/auth";
-import { ChatLayoutClient } from "@/components/chat-layout-client";
+import { getUser } from "@/features/auth/actions";
+import { ChatLayoutClient } from "@/features/chat/components/chat-layout-client";
 import { redirect } from "next/navigation";
 
 export default async function ChatLayout({
